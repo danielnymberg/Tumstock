@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Skärmlinjal</string>
+
+    <string name="drag_hint">Dra fingret på skalan för att mäta</string>
+    <string name="calib_hint">Kalibrera mot ett verkligt föremål</string>
+    <string name="measurement">%1$.1f cm  ·  %2$.0f mm  ·  %3$.2f″</string>
+
+    <string name="calibrate">Kalibrera</string>
+    <string name="clear">Nollställ</string>
+    <string name="done">Klar</string>
+    <string name="reset">Återställ</string>
+
+    <string name="calib_instruction">Lägg ett kreditkort (85,6 mm långt) längs skalan och dra reglaget tills kortets kant möter 85,6-mm-strecket. Eller matcha centimetrarna mot en fysisk linjal.</string>
+    <string name="calib_readout">%1$.1f px/mm  (~%2$.0f DPI)</string>
+</resources>
