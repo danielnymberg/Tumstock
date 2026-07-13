@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "se.nymberg.skarmlinjal"
+    namespace = "se.nymberg.tumstock"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "se.nymberg.skarmlinjal"
+        applicationId = "se.nymberg.tumstock"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

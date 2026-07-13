@@ -1,4 +1,4 @@
-package se.nymberg.skarmlinjal
+package se.nymberg.tumstock
 
 import android.content.Context
 
@@ -7,7 +7,7 @@ import android.content.Context
  * enheten — appen har ingen nätverksbehörighet.
  */
 class RulerPrefs(context: Context) {
-    private val sp = context.getSharedPreferences("skarmlinjal", Context.MODE_PRIVATE)
+    private val sp = context.getSharedPreferences("tumstock", Context.MODE_PRIVATE)
 
     /** Kalibrerat värde. 0 = ej kalibrerat (använd systemets uppskattning). */
     var pxPerMm: Float

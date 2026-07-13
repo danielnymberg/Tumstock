@@ -1,4 +1,4 @@
-name: Bygg Skärmlinjal APK
+name: Bygg Tumstock APK
 
 on:
   push:
@@ -33,13 +33,13 @@ jobs:
         run: ./gradlew --no-daemon assembleDebug
 
       - name: Döp om APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk skarmlinjal.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk tumstock.apk
 
       - name: Ladda upp som artifact
         uses: actions/upload-artifact@v4
         with:
-          name: skarmlinjal-apk
-          path: skarmlinjal.apk
+          name: tumstock-apk
+          path: tumstock.apk
           if-no-files-found: error
 
       - name: Publicera rullande release
@@ -47,11 +47,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: Skärmlinjal (senaste bygget)
+          name: Tumstock (senaste bygget)
           body: |
-            Automatiskt byggd debug-APK. Ladda ner `skarmlinjal.apk`, öppna på
+            Automatiskt byggd debug-APK. Ladda ner `tumstock.apk`, öppna på
             telefonen och installera. Se README.md.
-          files: skarmlinjal.apk
+          files: tumstock.apk
           prerelease: true
 
       - name: Publicera APK till git-gren (apk-build) för intern hämtning
@@ -60,12 +60,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp "$GITHUB_WORKSPACE/skarmlinjal.apk" ./skarmlinjal.apk
+          cp "$GITHUB_WORKSPACE/tumstock.apk" ./tumstock.apk
           rm -rf .git
           git init -q
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f skarmlinjal.apk
+          git add -f tumstock.apk
           git commit -q -m "APK-bygge ${GITHUB_SHA}"
           git branch -M apk-build
           git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" apk-build

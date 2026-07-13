@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "skarmlinjal"
+rootProject.name = "tumstock"
 include(":app")

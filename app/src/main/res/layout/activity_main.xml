@@ -23,7 +23,7 @@
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="?android:attr/textColorSecondary" />
 
-    <se.nymberg.skarmlinjal.RulerView
+    <se.nymberg.tumstock.RulerView
         android:id="@+id/ruler"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -1,4 +1,4 @@
-# Skärmlinjal
+# Tumstock
 
 En linjal på skärmen i **verklig storlek** — centimeter på ena kanten, tum på den andra. Dra fingret för att mäta. Ingen reklam, ingen spårning, **ingen nätverksbehörighet alls**.
 
@@ -19,8 +19,8 @@ Efter kalibrering är noggrannheten typiskt inom ±0,5 mm. **Återställ** går 
 
 APK:n byggs automatiskt i molnet av GitHub Actions — du behöver inte Android Studio.
 
-1. Öppna repots **Releases** → **Skärmlinjal (senaste bygget)**.
-2. Ladda ner `skarmlinjal.apk` på telefonen.
+1. Öppna repots **Releases** → **Tumstock (senaste bygget)**.
+2. Ladda ner `tumstock.apk` på telefonen.
 3. Öppna filen → tillåt *"Installera okända appar"* → **Installera**.
 
 ## Bygga själv

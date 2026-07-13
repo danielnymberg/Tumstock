@@ -1,9 +1,9 @@
-package se.nymberg.skarmlinjal
+package se.nymberg.tumstock
 
 import android.os.Bundle
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
-import se.nymberg.skarmlinjal.databinding.ActivityMainBinding
+import se.nymberg.tumstock.databinding.ActivityMainBinding
 import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {

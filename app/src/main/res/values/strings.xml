@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Skärmlinjal</string>
+    <string name="app_name">Tumstock</string>
 
     <string name="drag_hint">Dra fingret på skalan för att mäta</string>
     <string name="calib_hint">Kalibrera mot ett verkligt föremål</string>

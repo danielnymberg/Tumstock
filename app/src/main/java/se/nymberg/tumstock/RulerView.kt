@@ -1,4 +1,4 @@
-package se.nymberg.skarmlinjal
+package se.nymberg.tumstock
 
 import android.content.Context
 import android.graphics.Canvas
