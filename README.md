@@ -6,9 +6,9 @@ En linjal på skärmen i **verklig storlek** — centimeter på ena kanten, tum 
 
 Android rapporterar ofta fel skärmtäthet (`xdpi`/`ydpi` kan slå fel med tiotals procent), så för millimeterprecision kalibrerar du en gång mot ett verkligt föremål:
 
-1. Tryck **Kalibrera**.
-2. Lägg ett **kreditkort** (85,6 mm långt, ISO-standard) längs skalan — eller en fysisk linjal.
-3. Dra reglaget tills kortets kant möter 85,6 mm (eller tills centimetrarna stämmer).
+1. Tryck **Kalibrera** — en streckad, kortformad ram visas.
+2. Lägg ett **bankkort/ID-kort** på skärmen ovanpå ramen (alla ID-1-kort är 85,6 × 54 mm).
+3. Dra reglaget tills ramen har **exakt samma storlek** som kortet.
 4. **Klar.** Kalibreringen sparas lokalt.
 
 Efter kalibrering är noggrannheten typiskt inom ±0,5 mm. **Återställ** går tillbaka till systemets uppskattning.

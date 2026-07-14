@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
     private fun enterCalibration() {
         binding.calSeek.progress = progressFor(binding.ruler.pxPerMm)
         updateCalReadout(binding.ruler.pxPerMm)
+        binding.ruler.calibrationMode = true
         binding.normalBar.visibility = android.view.View.GONE
         binding.calibrationBar.visibility = android.view.View.VISIBLE
         binding.readout.setText(R.string.calib_hint)
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun exitCalibration(save: Boolean) {
         if (save) prefs.pxPerMm = binding.ruler.pxPerMm
+        binding.ruler.calibrationMode = false
         binding.calibrationBar.visibility = android.view.View.GONE
         binding.normalBar.visibility = android.view.View.VISIBLE
         binding.readout.setText(R.string.drag_hint)

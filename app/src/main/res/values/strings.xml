@@ -11,6 +11,7 @@
     <string name="done">Klar</string>
     <string name="reset">Återställ</string>
 
-    <string name="calib_instruction">Lägg ett kreditkort (85,6 mm långt) längs skalan och dra reglaget tills kortets kant möter 85,6-mm-strecket. Eller matcha centimetrarna mot en fysisk linjal.</string>
+    <string name="calib_instruction">Lägg ett bankkort/ID-kort på skärmen ovanför och dra reglaget tills den streckade ramen har exakt samma storlek som kortet. Tryck sedan Klar — då mäter linjalen rätt. (Alla ID-1-kort är 85,6 × 54 mm.)</string>
+    <string name="calib_card_hint">Lägg ditt kort i ramen och matcha storleken</string>
     <string name="calib_readout">%1$.1f px/mm  (~%2$.0f DPI)</string>
 </resources>
