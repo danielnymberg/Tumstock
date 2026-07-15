@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "se.nymberg.tumstock"
+    namespace = "se.nymberg.matverktyg"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "se.nymberg.tumstock"
+        applicationId = "se.nymberg.matverktyg"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.4"
+        versionCode = 1
+        versionName = "2.0.0"
     }
 
     buildFeatures {
@@ -56,4 +56,5 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.activity:activity-ktx:1.9.2")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 }

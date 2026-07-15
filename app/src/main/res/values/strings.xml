@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tumstock</string>
+    <string name="app_name">Mätverktyg</string>
     <string name="brand_url">danyapps.se</string>
 
+    <string name="tab_ruler">Linjal</string>
+    <string name="tab_photo">Foto</string>
+    <string name="tab_level">Vattenpass</string>
+
+    <!-- Linjal -->
     <string name="drag_hint">Dra fingret på skalan för att mäta</string>
     <string name="calib_hint">Kalibrera mot ett verkligt föremål</string>
+    <string name="check_hint">Lägg ett bankkort i ramen — fyller kortet ramen exakt är linjalen rätt</string>
     <string name="measurement">%1$.1f cm  ·  %2$.0f mm  ·  %3$.2f″</string>
 
+    <string name="check">Kontroll</string>
     <string name="calibrate">Kalibrera</string>
     <string name="clear">Nollställ</string>
     <string name="done">Klar</string>
@@ -16,4 +23,36 @@
     <string name="calib_card_top">▲ Kortets överkant mot blå linjen</string>
     <string name="calib_card_hint">▼ Tryck där kortets nederkant är</string>
     <string name="calib_readout">%1$.1f px/mm  (~%2$.0f DPI)</string>
+
+    <!-- Foto -->
+    <string name="photo_empty_hint">Lägg ett bankkort bredvid det du vill mäta (samma plan), fota rakt uppifrån</string>
+    <string name="photo_mark_corners">Markera kortets fyra hörn (%1$d/4) — dra för att finjustera</string>
+    <string name="photo_mark_points">Tryck på två punkter att mäta — dra för att finjustera</string>
+    <string name="take_photo">Ta foto</string>
+    <string name="pick_photo">Välj bild</string>
+    <string name="undo_point">Ångra punkt</string>
+    <string name="photo_distance">%1$.1f mm  ·  %2$.2f cm</string>
+    <string name="photo_load_error">Kunde inte läsa bilden</string>
+
+    <!-- Vattenpass -->
+    <string name="mode_flat_hint">Platt läge — telefonen ligger på ytan</string>
+    <string name="mode_edge_short_hint">Kant-läge — står på kortsidan, kanten längs lutningen</string>
+    <string name="mode_edge_long_hint">Kant-läge — ligger på långsidan, kanten längs lutningen</string>
+
+    <string name="angle_deg">%1$.1f°</string>
+    <string name="sub_level">I våg</string>
+    <string name="sub_grade">%1$.1f %% lutning · 1:%2$.1f</string>
+
+    <string name="freeze">Frys</string>
+    <string name="unfreeze">Lås upp</string>
+    <string name="zero">Nolla</string>
+    <string name="zeroed">Nollad mot nuvarande läge</string>
+    <string name="zero_reset">Nollning återställd</string>
+
+    <string name="roof_header">Tak-läge</string>
+    <string name="roof_sub">Mät takets lutning (platt eller på kant). Grönt = taktäckningen klarar den uppmätta lutningen.</string>
+    <string name="min_pitch">Min %1$.0f°</string>
+    <string name="suitable">Lämplig</string>
+    <string name="needs_more">Kräver ≥%1$.0f°</string>
+    <string name="roof_disclaimer">Riktvärden för fältbruk. Bindande minsta lutning står alltid i tillverkarens monteringsanvisning och gällande branschregler (t.ex. AMA Hus, tätskiktsgarantier). Kontrollera alltid mot dessa.</string>
 </resources>

@@ -3,17 +3,21 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Linjalkropp (bläck, tunt streck) -->
+    <!-- Vinkelhake (bläck, tunt streck) -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#1B1F1E"
         android:strokeWidth="4"
         android:strokeLineJoin="round"
-        android:pathData="M46,18 h16 a4,4 0 0 1 4,4 v64 a4,4 0 0 1 -4,4 h-16 a4,4 0 0 1 -4,-4 v-64 a4,4 0 0 1 4,-4 z" />
+        android:pathData="M34,26 h12 v36 h36 v12 a2,2 0 0 1 -2,2 h-44 a2,2 0 0 1 -2,-2 v-46 a2,2 0 0 1 2,-2 z" />
     <!-- Graderingar (funktionsfärg) -->
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,32 H54" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,44 H50" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,56 H54" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,68 H50" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,80 H54" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M34,36 H41" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M34,46 H44" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M34,56 H41" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M62,74 V67" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M72,74 V64" />
+    <!-- Libellbubbla i hörnet -->
+    <path
+        android:fillColor="#B04A3A"
+        android:pathData="M62,44 m-6,0 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 z" />
 </vector>

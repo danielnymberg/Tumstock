@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "tumstock"
+rootProject.name = "matverktyg"
 include(":app")

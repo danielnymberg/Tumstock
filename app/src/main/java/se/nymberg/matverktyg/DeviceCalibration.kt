@@ -1,4 +1,4 @@
-package se.nymberg.tumstock
+package se.nymberg.matverktyg
 
 import android.os.Build
 

@@ -1,4 +1,4 @@
-package se.nymberg.tumstock
+package se.nymberg.matverktyg
 
 import android.content.Context
 import android.graphics.Canvas
@@ -30,6 +30,13 @@ class RulerView @JvmOverloads constructor(
 
     /** När true ritas en kortformad kalibreringsram istället för skalan. */
     var calibrationMode: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    /** När true ritas en centrerad kortram ovanpå skalan — kontrolläge. */
+    var checkMode: Boolean = false
         set(value) {
             field = value
             invalidate()
@@ -89,7 +96,22 @@ class RulerView @JvmOverloads constructor(
         }
         drawMetric(canvas)
         drawImperial(canvas)
+        if (checkMode) drawCheckCard(canvas)
         drawMarker(canvas)
+    }
+
+    /**
+     * Kontrolläge: en kortstor ram mitt på skärmen. Lägg ett bankkort i ramen
+     * — fyller kortet ramen exakt är kalibreringen rätt.
+     */
+    private fun drawCheckCard(canvas: Canvas) {
+        val w = CARD_WID_MM * pxPerMm
+        val h = CARD_LEN_MM * pxPerMm
+        val left = (width - w) / 2f
+        val top = (height - h) / 2f
+        val radius = dp(10f)
+        canvas.drawRoundRect(left, top, left + w, top + h, radius, radius, cardFill)
+        canvas.drawRoundRect(left, top, left + w, top + h, radius, radius, cardFrame)
     }
 
     /**

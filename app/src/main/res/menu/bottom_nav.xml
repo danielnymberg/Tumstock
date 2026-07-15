@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navRuler"
+        android:icon="@drawable/ic_nav_ruler"
+        android:title="@string/tab_ruler" />
+    <item
+        android:id="@+id/navPhoto"
+        android:icon="@drawable/ic_nav_photo"
+        android:title="@string/tab_photo" />
+    <item
+        android:id="@+id/navLevel"
+        android:icon="@drawable/ic_nav_level"
+        android:title="@string/tab_level" />
+</menu>
