@@ -96,6 +96,36 @@ object Homography {
     private fun dist(a: PointF, b: PointF): Double =
         hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble())
 
+    /**
+     * 95 %-osäkerhet (mm) för avståndet p1–p2, via Monte-Carlo: korthörnen
+     * störs N(0, sigmaPx), homografin räknas om och spridningen mäts.
+     * Deterministiskt frö → stabil siffra för samma markering.
+     */
+    fun estimateErrorMm(
+        corners: List<PointF>,
+        p1: PointF,
+        p2: PointF,
+        sigmaPx: Float = 2f,
+        samples: Int = 24
+    ): Double {
+        val rnd = java.util.Random(42)
+        val dists = ArrayList<Double>(samples)
+        for (i in 0 until samples) {
+            val jittered = corners.map {
+                PointF(
+                    it.x + (rnd.nextGaussian() * sigmaPx).toFloat(),
+                    it.y + (rnd.nextGaussian() * sigmaPx).toFloat()
+                )
+            }
+            val h = fromCardCorners(jittered) ?: continue
+            dists.add(distanceMm(h, p1, p2))
+        }
+        if (dists.size < 4) return 0.0
+        val mean = dists.average()
+        val variance = dists.sumOf { (it - mean) * (it - mean) } / (dists.size - 1)
+        return 2.0 * kotlin.math.sqrt(variance)
+    }
+
     /** Gauss-eliminering med partiell pivotering. */
     private fun solve(a: Array<DoubleArray>, b: DoubleArray): DoubleArray? {
         val n = b.size

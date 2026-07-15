@@ -97,15 +97,18 @@ class PhotoController(
             binding.photoResult.text = ""
             return
         }
+        val cornerPts = binding.photoView.corners
         val values = lineList.map { line ->
             val mm = Homography.distanceMm(h, line.a, line.b)
             formatMm(mm)
         }
         binding.photoView.lineValues = values
-        // Resultatraden visar senaste måttet stort.
+        // Resultatraden visar senaste måttet stort, med felmarginal.
         val lastIdx = values.size - 1
         val letter = ('A' + (lastIdx % 26)).toString()
-        binding.photoResult.text = "$letter: ${values[lastIdx]}"
+        val err = Homography.estimateErrorMm(cornerPts, lineList[lastIdx].a, lineList[lastIdx].b)
+        val errText = if (err > 0.05) String.format(" ± %.1f mm", err) else ""
+        binding.photoResult.text = "$letter: ${values[lastIdx]}$errText"
     }
 
     private fun formatMm(mm: Double): String =
