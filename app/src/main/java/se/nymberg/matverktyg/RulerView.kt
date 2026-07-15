@@ -60,6 +60,12 @@ class RulerView @JvmOverloads constructor(
         style = Paint.Style.FILL
         color = Color.parseColor("#14B04A3A")
     }
+    private val bracket = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = dp(2.5f)
+        strokeCap = Paint.Cap.ROUND
+        color = Color.parseColor("#B04A3A")
+    }
     private val topRef = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         strokeWidth = dp(3f)
         color = Color.parseColor("#1565C0")
@@ -101,17 +107,41 @@ class RulerView @JvmOverloads constructor(
     }
 
     /**
-     * Kontrolläge: en kortstor ram mitt på skärmen. Lägg ett bankkort i ramen
-     * — fyller kortet ramen exakt är kalibreringen rätt.
+     * Kontrolläge: kortstora markörer mitt på skärmen. Lägg ett bankkort där
+     * — passar det exakt mellan vinklarna är kalibreringen rätt.
      */
     private fun drawCheckCard(canvas: Canvas) {
         val w = CARD_WID_MM * pxPerMm
         val h = CARD_LEN_MM * pxPerMm
         val left = (width - w) / 2f
         val top = (height - h) / 2f
-        val radius = dp(10f)
-        canvas.drawRoundRect(left, top, left + w, top + h, radius, radius, cardFill)
-        canvas.drawRoundRect(left, top, left + w, top + h, radius, radius, cardFrame)
+        drawCardBrackets(canvas, left, top, left + w, top + h)
+    }
+
+    /**
+     * Fyra L-vinklar och kant-ticks som ligger UTANFÖR kortrektangeln —
+     * så syns de runt ett fysiskt kort som läggs på skärmen, aldrig under det.
+     */
+    private fun drawCardBrackets(canvas: Canvas, l: Float, t: Float, r: Float, b: Float) {
+        val gap = dp(2f)
+        val arm = dp(12f)
+        val ll = l - gap
+        val tt = t - gap
+        val rr = r + gap
+        val bb = b + gap
+        // Hörnvinklar (utåt)
+        canvas.drawLine(ll, tt, ll + arm, tt, bracket); canvas.drawLine(ll, tt, ll, tt + arm, bracket)
+        canvas.drawLine(rr, tt, rr - arm, tt, bracket); canvas.drawLine(rr, tt, rr, tt + arm, bracket)
+        canvas.drawLine(rr, bb, rr - arm, bb, bracket); canvas.drawLine(rr, bb, rr, bb - arm, bracket)
+        canvas.drawLine(ll, bb, ll + arm, bb, bracket); canvas.drawLine(ll, bb, ll, bb - arm, bracket)
+        // Kant-ticks vid sidornas mittpunkter (vinkelrätt utåt)
+        val tick = dp(8f)
+        val cx = (l + r) / 2f
+        val cy = (t + b) / 2f
+        canvas.drawLine(cx, tt, cx, tt - tick, bracket)
+        canvas.drawLine(cx, bb, cx, bb + tick, bracket)
+        canvas.drawLine(ll, cy, ll - tick, cy, bracket)
+        canvas.drawLine(rr, cy, rr + tick, cy, bracket)
     }
 
     /**
@@ -131,7 +161,7 @@ class RulerView @JvmOverloads constructor(
 
         canvas.drawLine(0f, topY, width.toFloat(), topY, topRef)
         canvas.drawRoundRect(left, topY, left + w, bottomY, radius, radius, cardFill)
-        canvas.drawRoundRect(left, topY, left + w, bottomY, radius, radius, cardFrame)
+        canvas.drawRoundRect(left, topY, left + w, bottomY, radius, radius, bracket)
         canvas.drawText(context.getString(R.string.calib_card_top), width / 2f, topY + dp(20f), cardLabel)
         canvas.drawText(context.getString(R.string.calib_card_hint), width / 2f, bottomY + dp(26f), cardLabel)
     }
