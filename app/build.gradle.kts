@@ -56,6 +56,12 @@ android {
             signingConfig = signingConfigs.getByName("stable")
         }
     }
+
+    packaging {
+        // Komprimera native-libs i APK:n (OpenCV ~30 MB → ~half). Något
+        // långsammare installation, men APK:n ryms i leveranskanalerna.
+        jniLibs.useLegacyPackaging = true
+    }
 }
 
 dependencies {
