@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="teal_700">#FF00796B</color>
+    <!-- DaNy Apps-palett (från danyapps.se) -->
+    <color name="paper">#FFF2EFE8</color>
+    <color name="paper_2">#FFECE8DE</color>
+    <color name="ink">#FF1B1F1E</color>
+    <color name="ink_2">#FF3A3A33</color>
+    <color name="ink_3">#FF5A5A50</color>
+    <color name="ink_mute">#FF9B968A</color>
+    <color name="rule">#291B1F1E</color>
+    <color name="rule_soft">#171B1F1E</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Funktionsfärg för Tumstock (mätmarkör + kalibreringsram) -->
+    <color name="accent">#FFB04A3A</color>
 </resources>

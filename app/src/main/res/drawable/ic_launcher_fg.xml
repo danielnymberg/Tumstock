@@ -3,14 +3,17 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Linjalkropp -->
+    <!-- Linjalkropp (bläck, tunt streck) -->
     <path
-        android:fillColor="#FFFDF6"
-        android:pathData="M38,20 h32 a3,3 0 0 1 3,3 v62 a3,3 0 0 1 -3,3 h-32 a3,3 0 0 1 -3,-3 v-62 a3,3 0 0 1 3,-3 z" />
-    <!-- Graderingar -->
-    <path android:fillColor="#00796B" android:pathData="M38,30 h14 v3 h-14 z" />
-    <path android:fillColor="#00796B" android:pathData="M38,40 h9 v3 h-9 z" />
-    <path android:fillColor="#00796B" android:pathData="M38,50 h14 v3 h-14 z" />
-    <path android:fillColor="#00796B" android:pathData="M38,60 h9 v3 h-9 z" />
-    <path android:fillColor="#00796B" android:pathData="M38,70 h14 v3 h-14 z" />
+        android:fillColor="#00000000"
+        android:strokeColor="#1B1F1E"
+        android:strokeWidth="4"
+        android:strokeLineJoin="round"
+        android:pathData="M46,18 h16 a4,4 0 0 1 4,4 v64 a4,4 0 0 1 -4,4 h-16 a4,4 0 0 1 -4,-4 v-64 a4,4 0 0 1 4,-4 z" />
+    <!-- Graderingar (funktionsfärg) -->
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,32 H54" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,44 H50" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,56 H54" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,68 H50" />
+    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42,80 H54" />
 </vector>

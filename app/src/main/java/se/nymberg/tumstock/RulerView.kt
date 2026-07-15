@@ -46,19 +46,19 @@ class RulerView @JvmOverloads constructor(
     private val cardFrame = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = dp(2.5f)
-        color = Color.parseColor("#D32F2F")
+        color = Color.parseColor("#B04A3A")
         pathEffect = android.graphics.DashPathEffect(floatArrayOf(dp(9f), dp(6f)), 0f)
     }
     private val cardFill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.parseColor("#14D32F2F")
+        color = Color.parseColor("#14B04A3A")
     }
     private val topRef = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         strokeWidth = dp(3f)
         color = Color.parseColor("#1565C0")
     }
     private val cardLabel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#D32F2F")
+        color = Color.parseColor("#B04A3A")
         textSize = dp(15f)
         textAlign = Paint.Align.CENTER
     }
@@ -69,7 +69,7 @@ class RulerView @JvmOverloads constructor(
     }
     private val accent = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         strokeWidth = dp(2f)
-        color = Color.parseColor("#D32F2F")
+        color = Color.parseColor("#B04A3A")
     }
     private val label = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#222222")

@@ -3,32 +3,54 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/paper"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <!-- Topprad (DaNy-signatur) -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorSurface"
-        app:title="@string/app_name"
-        app:titleTextAppearance="?attr/textAppearanceTitleMedium" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="14dp">
+
+        <TextView
+            style="@style/DaNy.Meta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name" />
+
+        <TextView
+            style="@style/DaNy.Meta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/brand_url" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/rule" />
 
     <TextView
         android:id="@+id/readout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="16dp"
+        android:paddingTop="10dp"
         android:paddingBottom="6dp"
         android:text="@string/drag_hint"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?android:attr/textColorSecondary" />
+        android:textColor="@color/ink_3"
+        android:textSize="14sp" />
 
     <se.nymberg.tumstock.RulerView
         android:id="@+id/ruler"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#FFFDF6" />
+        android:background="@color/paper" />
 
     <!-- Normalläge -->
     <LinearLayout
@@ -70,7 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/calib_instruction"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            android:textColor="@color/ink_2"
+            android:textSize="13sp" />
 
         <SeekBar
             android:id="@+id/calSeek"
@@ -84,8 +107,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/ink_3"
+            android:textSize="12sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
