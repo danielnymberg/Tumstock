@@ -7,11 +7,13 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.materialswitch.MaterialSwitch
 import se.nymberg.matverktyg.databinding.ActivityMainBinding
 import kotlin.math.abs
 import kotlin.math.acos
@@ -21,17 +23,10 @@ import kotlin.math.sqrt
 import kotlin.math.tan
 
 /**
- * Vattenpass-fliken. Läser gravitationssensorn och AUTO-detekterar hur
- * telefonen hålls:
- *
- * - PLATT (ryggen mot ytan): lutning = vinkeln mellan ryggen och
- *   horisontalplanet, acos(|gz|/g). 0° = plant.
- * - PÅ KANT: telefonen står på en kant (kamerapuckel/sidoknappar hindrar
- *   platt läge). Då mäts KANTENS lutning mot horisonten — den axel som
- *   ligger LÄNGS underlaget — inte hur upprest telefonen är:
- *     står på kortsidan  → kanten är x-axeln → lutning = asin(|gx|/g)
- *     ligger på långsidan → kanten är y-axeln → lutning = asin(|gy|/g)
- *   På plan yta ger detta 0°, på ett 20°-tak 20°.
+ * Vattenpass-fliken. Auto-detekterar hur telefonen hålls (platt / på kortsida
+ * / på långsida) och mäter i kant-lägena KANTENS lutning mot horisonten.
+ * Felmarginal skattas ur sensorbruset. Regelpanelerna (tak/våtrum/toleranser)
+ * togglas per panel och bär källor — se [RULE_PANELS].
  */
 class LevelController(
     private val activity: AppCompatActivity,
@@ -46,14 +41,21 @@ class LevelController(
     private val gravity = FloatArray(3)
     private var frozen = false
 
-    private val roofStatus = ArrayList<TextView>()
+    // Brusskattning: ringbuffert med senaste tilt-värdena.
+    private val recent = FloatArray(25)
+    private var recentCount = 0
+    private var recentIdx = 0
+
+    /** status-TextView per regel, panelvis; container per panel för toggle. */
+    private val ruleStatus = HashMap<String, ArrayList<TextView>>()
+    private val panelBodies = HashMap<String, LinearLayout>()
 
     fun init() {
         sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)?.also { usingGravity = true }
             ?: sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
-        buildRoofingRows()
+        buildPanels()
 
         binding.freezeButton.setOnClickListener {
             frozen = !frozen
@@ -103,31 +105,47 @@ class LevelController(
         val az = abs(gz) / norm
 
         val tilt: Float
-        val flatMode = az > 0.75f
-        if (flatMode) {
-            // Platt: ryggens avvikelse från horisontalplanet.
+        if (az > 0.75f) {
             val raw = Math.toDegrees(acos(az.coerceIn(0f, 1f).toDouble())).toFloat()
             tilt = (raw - prefs.offTilt).coerceAtLeast(0f)
             binding.modeLabel.setText(R.string.mode_flat_hint)
-            binding.bubble.visibility = android.view.View.VISIBLE
             binding.bubble.setLevel(-gx / norm - prefs.offNx, gy / norm - prefs.offNy, tilt)
         } else if (ay > ax) {
-            // Står på kortsidan: kanten (x-axeln) mot horisonten.
             tilt = Math.toDegrees(asin(ax.coerceIn(0f, 1f).toDouble())).toFloat()
             binding.modeLabel.setText(R.string.mode_edge_short_hint)
-            binding.bubble.visibility = android.view.View.VISIBLE
             binding.bubble.setLevel((gx / norm), 0f, tilt)
         } else {
-            // Ligger på långsidan: kanten (y-axeln) mot horisonten.
             tilt = Math.toDegrees(asin(ay.coerceIn(0f, 1f).toDouble())).toFloat()
             binding.modeLabel.setText(R.string.mode_edge_long_hint)
-            binding.bubble.visibility = android.view.View.VISIBLE
             binding.bubble.setLevel(0f, (gy / norm), tilt)
         }
 
+        // Brus → felmarginal
+        recent[recentIdx] = tilt
+        recentIdx = (recentIdx + 1) % recent.size
+        if (recentCount < recent.size) recentCount++
+        val margin = marginDeg()
+
         binding.angle.text = activity.getString(R.string.angle_deg, tilt)
         binding.angleSub.text = subText(tilt)
-        updateRoofing(tilt)
+        binding.angleMargin.text = activity.getString(R.string.margin_deg, margin)
+        updatePanels(tilt)
+    }
+
+    /** ±(2·stddev + nollterm), klampat till [0,1°..0,9°]. */
+    private fun marginDeg(): Float {
+        if (recentCount < 5) return 0.5f
+        var mean = 0f
+        for (i in 0 until recentCount) mean += recent[i]
+        mean /= recentCount
+        var v = 0f
+        for (i in 0 until recentCount) {
+            val d = recent[i] - mean
+            v += d * d
+        }
+        val std = sqrt(v / (recentCount - 1))
+        val zeroTerm = if (prefs.isZeroed) 0.05f else 0.3f
+        return (2f * std + zeroTerm).coerceIn(0.1f, 0.9f)
     }
 
     private fun subText(tiltDeg: Float): String {
@@ -153,51 +171,104 @@ class LevelController(
         toast(activity.getString(R.string.zeroed))
     }
 
-    private fun buildRoofingRows() {
-        val pad = (12 * activity.resources.displayMetrics.density).roundToInt()
-        for (r in ROOFINGS) {
-            val row = LinearLayout(activity).apply {
+    // --- Regelpaneler ---
+
+    private fun buildPanels() {
+        val d = activity.resources.displayMetrics.density
+        val pad = (12 * d).roundToInt()
+        for (panel in RULE_PANELS) {
+            // Panelhuvud: titel + toggle
+            val header = LinearLayout(activity).apply {
                 orientation = LinearLayout.HORIZONTAL
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                setPadding(0, pad, 0, pad)
                 gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, pad, 0, 0)
             }
-            val texts = LinearLayout(activity).apply {
-                orientation = LinearLayout.VERTICAL
+            val title = TextView(activity).apply {
+                text = panel.title
+                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_TitleSmall)
                 layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             }
-            val name = TextView(activity).apply {
-                text = r.name
-                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyLarge)
+            val toggle = MaterialSwitch(activity).apply {
+                isChecked = prefs.panelEnabled(panel.id)
             }
-            val note = TextView(activity).apply {
-                text = activity.getString(R.string.min_pitch, r.minDeg) + " · " + r.note
+            header.addView(title)
+            header.addView(toggle)
+            binding.panelsContainer.addView(header)
+
+            // Panelkropp: undertext + regelrader
+            val body = LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                visibility = if (prefs.panelEnabled(panel.id)) View.VISIBLE else View.GONE
+            }
+            val subtitle = TextView(activity).apply {
+                text = panel.subtitle
                 setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
                 setTextColor(Color.parseColor("#5A5A50"))
+                setPadding(0, (2 * d).roundToInt(), 0, (4 * d).roundToInt())
             }
-            texts.addView(name)
-            texts.addView(note)
-            val status = TextView(activity).apply {
-                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge)
+            body.addView(subtitle)
+
+            val statusList = ArrayList<TextView>()
+            for (rule in panel.rules) {
+                val row = LinearLayout(activity).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    setPadding(0, pad / 2, 0, pad / 2)
+                }
+                val texts = LinearLayout(activity).apply {
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                }
+                texts.addView(TextView(activity).apply {
+                    text = rule.name
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyLarge)
+                })
+                texts.addView(TextView(activity).apply {
+                    text = rule.note
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
+                    setTextColor(Color.parseColor("#5A5A50"))
+                })
+                texts.addView(TextView(activity).apply {
+                    text = activity.getString(R.string.panel_source, rule.source.label)
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelSmall)
+                    setTextColor(Color.parseColor("#9B968A"))
+                })
+                val status = TextView(activity).apply {
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge)
+                }
+                row.addView(texts)
+                row.addView(status)
+                body.addView(row)
+                statusList.add(status)
             }
-            row.addView(texts)
-            row.addView(status)
-            binding.roofingContainer.addView(row)
-            roofStatus.add(status)
+            binding.panelsContainer.addView(body)
+            ruleStatus[panel.id] = statusList
+            panelBodies[panel.id] = body
+
+            toggle.setOnCheckedChangeListener { _, on ->
+                prefs.setPanelEnabled(panel.id, on)
+                body.visibility = if (on) View.VISIBLE else View.GONE
+            }
         }
     }
 
-    private fun updateRoofing(tilt: Float) {
-        for (i in ROOFINGS.indices) {
-            val r = ROOFINGS[i]
-            val ok = tilt >= r.minDeg
-            roofStatus[i].apply {
-                text = if (ok) activity.getString(R.string.suitable)
-                       else activity.getString(R.string.needs_more, r.minDeg)
-                setTextColor(if (ok) Color.parseColor("#5E7D5A") else Color.parseColor("#9B968A"))
+    private fun updatePanels(tilt: Float) {
+        for (panel in RULE_PANELS) {
+            if (panelBodies[panel.id]?.visibility != View.VISIBLE) continue
+            val statusList = ruleStatus[panel.id] ?: continue
+            for (i in panel.rules.indices) {
+                val r = panel.rules[i]
+                val okMin = r.minDeg == null || tilt >= r.minDeg
+                val okMax = r.maxDeg == null || tilt <= r.maxDeg
+                val ok = okMin && okMax
+                statusList[i].apply {
+                    text = when {
+                        ok -> activity.getString(R.string.suitable)
+                        !okMin -> activity.getString(R.string.needs_more, r.minDeg)
+                        else -> activity.getString(R.string.over_max, r.maxDeg)
+                    }
+                    setTextColor(if (ok) Color.parseColor("#5E7D5A") else Color.parseColor("#9B968A"))
+                }
             }
         }
     }

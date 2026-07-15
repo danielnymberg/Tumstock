@@ -320,6 +320,14 @@
                     android:textSize="16sp"
                     android:textStyle="italic" />
 
+                <TextView
+                    android:id="@+id/angleMargin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/ink_mute"
+                    android:textSize="12sp" />
+
                 <se.nymberg.matverktyg.BubbleView
                     android:id="@+id/bubble"
                     android:layout_width="match_parent"
@@ -364,19 +372,10 @@
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="16dp"
                     android:paddingTop="16dp"
-                    android:text="@string/roof_header" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="4dp"
-                    android:text="@string/roof_sub"
-                    android:textColor="@color/ink_3"
-                    android:textSize="13sp" />
+                    android:text="@string/panels_header" />
 
                 <LinearLayout
-                    android:id="@+id/roofingContainer"
+                    android:id="@+id/panelsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
