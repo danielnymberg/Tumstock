@@ -37,6 +37,9 @@ class PhotoMarkView @JvmOverloads constructor(
 
     var listener: Listener? = null
 
+    /** Anropas när ett KORT-hörn släpps efter drag/placering (för kantsnäpp). */
+    var onCornerReleased: (() -> Unit)? = null
+
     /** Formaterade värden per mätlinje (sätts av controllern), t.ex. "312 mm". */
     var lineValues: List<String> = emptyList()
         set(value) {
@@ -269,9 +272,11 @@ class PhotoMarkView @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                val wasCorner = dragging != null && corners.contains(dragging)
                 dragging = null
                 loupe.active = false
                 invalidate()
+                if (wasCorner && corners.size == 4) onCornerReleased?.invoke()
                 return true
             }
         }

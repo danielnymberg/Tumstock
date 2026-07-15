@@ -35,7 +35,7 @@
     <string name="photo_empty_hint">Lägg ett bankkort bredvid det du vill mäta (samma plan), fota rakt uppifrån — lite vinkel korrigeras automatiskt</string>
     <string name="photo_auto_searching">Söker kortet i bilden …</string>
     <string name="photo_auto_found">Kort hittat ✓ — dra hörnen om något sitter fel, tryck sedan mätpunkter</string>
-    <string name="photo_auto_failed">Hittade inget kort automatiskt — tryck på kortets fyra hörn (dra med luppen för precision)</string>
+    <string name="photo_auto_failed">Hittade inget kort — tryck UNGEFÄR där kortets fyra hörn är, kanterna snäpps fast automatiskt (rundade hörn gör inget)</string>
     <string name="photo_mark_corners">Markera kortets fyra hörn (%1$d/4) — dra för att finjustera</string>
     <string name="photo_mark_points">Tryck två punkter per mått (upp till 8 mått) — dra med luppen för att finjustera</string>
     <string name="take_photo">Ta foto</string>

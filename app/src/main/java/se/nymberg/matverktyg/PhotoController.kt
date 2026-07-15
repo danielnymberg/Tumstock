@@ -37,8 +37,32 @@ class PhotoController(
             uri?.let { loadImage(it) }
         }
 
+    @Volatile
+    private var refining = false
+
     fun init() {
         binding.photoView.listener = this
+
+        // Magnetiska kanter: när ett hörn släpps snäpps sidorna mot kortets
+        // verkliga kanter (rundade hörn gör inget — ungefär räcker).
+        binding.photoView.onCornerReleased = {
+            val bm = binding.photoView.currentBitmap()
+            val rough = binding.photoView.corners.map { android.graphics.PointF(it.x, it.y) }
+            if (bm != null && rough.size == 4 && !refining) {
+                refining = true
+                Thread {
+                    val snapped = OpenCvCardDetector.refineQuad(bm, rough)
+                    activity.runOnUiThread {
+                        refining = false
+                        if (snapped != null && binding.photoView.currentBitmap() === bm &&
+                            binding.photoView.corners.size == 4
+                        ) {
+                            binding.photoView.setDetectedCorners(snapped)
+                        }
+                    }
+                }.start()
+            }
+        }
 
         binding.takePhotoButton.setOnClickListener {
             val dir = File(activity.cacheDir, "photos").apply { mkdirs() }
