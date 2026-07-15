@@ -23,6 +23,13 @@
     <string name="calib_card_top">▲ Kortets överkant mot blå linjen</string>
     <string name="calib_card_hint">▼ Tryck där kortets nederkant är</string>
     <string name="calib_readout">%1$.1f px/mm  (~%2$.0f DPI)</string>
+    <string name="calibrated_auto">Kalibrerad automatiskt: %1$s</string>
+    <string name="calibrated_diagonal">Kalibrerad: skärmdiagonal</string>
+    <string name="calibrated_card">Kalibrerad mot kort</string>
+    <string name="calibrated_estimate">Uppskattad — kalibrera för bättre noggrannhet</string>
+    <string name="enter_diagonal">Ange skärmstorlek</string>
+    <string name="diagonal_hint">Skärmdiagonal i tum, t.ex. 6,67</string>
+    <string name="ruler_too_long_hint">Längre än skärmen? Använd Foto-fliken med ett bankkort som referens.</string>
 
     <!-- Foto -->
     <string name="photo_empty_hint">Lägg ett bankkort bredvid det du vill mäta (samma plan), fota rakt uppifrån — lite vinkel korrigeras automatiskt</string>
