@@ -4,11 +4,11 @@ En linjal på skärmen i **verklig storlek** — centimeter på ena kanten, tum 
 
 ## Varför kalibrering behövs
 
-Android rapporterar ofta fel skärmtäthet (`xdpi`/`ydpi` kan slå fel med tiotals procent), så för millimeterprecision kalibrerar du en gång mot ett verkligt föremål:
+Kända telefoner (t.ex. Nothing Phone (3)) ställer in sig **automatiskt** via en inbyggd modelldatabas. För övriga — eller för att kontrollera — kalibrerar du en gång mot ett bankkort (Android rapporterar ofta fel skärmtäthet, så `xdpi`/`ydpi` duger inte för mm-precision):
 
-1. Tryck **Kalibrera** — en streckad, kortformad ram visas.
-2. Lägg ett **bankkort/ID-kort** på skärmen ovanpå ramen (alla ID-1-kort är 85,6 × 54 mm).
-3. Dra reglaget tills ramen har **exakt samma storlek** som kortet.
+1. Tryck **Kalibrera** — en kortformad ram hänger från en blå linje upptill.
+2. Lägg ett **bankkort** med **överkanten mot den blå linjen** (kortet stående; alla ID-1-kort är 85,6 × 54 mm).
+3. **Tryck på skärmen där kortets nederkant är.** Ramen snäpper dit. Finjustera vid behov med reglaget.
 4. **Klar.** Kalibreringen sparas lokalt.
 
 Efter kalibrering är noggrannheten typiskt inom ±0,5 mm. **Återställ** går tillbaka till systemets uppskattning.

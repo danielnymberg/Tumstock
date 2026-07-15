@@ -38,6 +38,9 @@ class RulerView @JvmOverloads constructor(
     /** Anropas när mätlinjen flyttas; ger avståndet från toppen i mm. */
     var onMeasureChanged: ((mm: Float) -> Unit)? = null
 
+    /** Anropas i kalibreringsläge när användaren trycker och sätter nytt pxPerMm. */
+    var onCalibrationChanged: ((pxPerMm: Float) -> Unit)? = null
+
     private var markerY: Float = -1f
 
     private val cardFrame = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -46,8 +49,16 @@ class RulerView @JvmOverloads constructor(
         color = Color.parseColor("#D32F2F")
         pathEffect = android.graphics.DashPathEffect(floatArrayOf(dp(9f), dp(6f)), 0f)
     }
+    private val cardFill = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.parseColor("#14D32F2F")
+    }
+    private val topRef = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        strokeWidth = dp(3f)
+        color = Color.parseColor("#1565C0")
+    }
     private val cardLabel = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#222222")
+        color = Color.parseColor("#D32F2F")
         textSize = dp(15f)
         textAlign = Paint.Align.CENTER
     }
@@ -82,21 +93,25 @@ class RulerView @JvmOverloads constructor(
     }
 
     /**
-     * Ritar en kortformad, streckad ram i ISO-kortets mått (85,6 × 54 mm,
-     * stående). Användaren lägger sitt kort på ramen och drar reglaget tills
-     * de är exakt lika stora — då är [pxPerMm] rätt. Inga mm-streck att tolka.
+     * Kalibreringsguide. En kortformad ram (ISO-kort 85,6 × 54 mm, stående)
+     * hänger från toppen (blå linje). Kortets ÖVERKANT läggs mot blå linjen;
+     * användaren TRYCKER där kortets NEDERKANT är — då blir [pxPerMm] rätt.
+     * Ramen ritas alltid utifrån aktuellt [pxPerMm], så efter en tryckning
+     * ligger ramens nederkant exakt där man tryckte.
      */
     private fun drawCalibrationCard(canvas: Canvas) {
-        val w = 53.98f * pxPerMm   // kortets kortsida
-        val h = 85.60f * pxPerMm   // kortets långsida
+        val topY = dp(2f)
+        val w = CARD_WID_MM * pxPerMm
+        val h = CARD_LEN_MM * pxPerMm
         val left = (width - w) / 2f
-        val top = dp(96f)
-        canvas.drawText(
-            context.getString(R.string.calib_card_hint),
-            width / 2f, top - dp(22f), cardLabel
-        )
+        val bottomY = topY + h
         val radius = dp(10f)
-        canvas.drawRoundRect(left, top, left + w, top + h, radius, radius, cardFrame)
+
+        canvas.drawLine(0f, topY, width.toFloat(), topY, topRef)
+        canvas.drawRoundRect(left, topY, left + w, bottomY, radius, radius, cardFill)
+        canvas.drawRoundRect(left, topY, left + w, bottomY, radius, radius, cardFrame)
+        canvas.drawText(context.getString(R.string.calib_card_top), width / 2f, topY + dp(20f), cardLabel)
+        canvas.drawText(context.getString(R.string.calib_card_hint), width / 2f, bottomY + dp(26f), cardLabel)
     }
 
     /** Centimeterskala längs vänsterkanten. */
@@ -155,9 +170,15 @@ class RulerView @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (calibrationMode) return false
         when (event.action) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                if (calibrationMode) {
+                    // Tryckpunkten = kortets nederkant, 85,6 mm under toppen.
+                    val v = ((event.y - dp(2f)) / CARD_LEN_MM).coerceIn(MIN_PX_PER_MM, MAX_PX_PER_MM)
+                    pxPerMm = v
+                    onCalibrationChanged?.invoke(v)
+                    return true
+                }
                 markerY = event.y.coerceIn(0f, height.toFloat())
                 onMeasureChanged?.invoke(markerY / pxPerMm)
                 invalidate()
@@ -176,6 +197,11 @@ class RulerView @JvmOverloads constructor(
     private fun dp(v: Float): Float = v * resources.displayMetrics.density
 
     companion object {
+        const val CARD_LEN_MM = 85.60f   // ISO-1-kortets långsida
+        const val CARD_WID_MM = 53.98f   // ISO-1-kortets kortsida
+        const val MIN_PX_PER_MM = 2f
+        const val MAX_PX_PER_MM = 40f
+
         fun roundHalf(v: Float): Float = (v * 2).roundToInt() / 2f
     }
 }

@@ -11,8 +11,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var prefs: RulerPrefs
 
-    /** Systemets uppskattning (används tills användaren kalibrerar). */
-    private var systemPxPerMm: Float = 10f
+    /** Auto-värde: känd modell ur databasen, annars systemets uppskattning. */
+    private var autoPxPerMm: Float = 10f
+    private var autoFromDb: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,10 +21,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         prefs = RulerPrefs(this)
 
-        systemPxPerMm = systemEstimate()
+        val dbValue = DeviceCalibration.lookup()
+        autoFromDb = dbValue != null
+        autoPxPerMm = dbValue ?: systemEstimate()
         binding.ruler.pxPerMm = effectivePxPerMm()
 
         binding.ruler.onMeasureChanged = { mm -> showMeasurement(mm) }
+        binding.ruler.onCalibrationChanged = { v ->
+            binding.calSeek.progress = progressFor(v)
+            updateCalReadout(v)
+        }
 
         binding.calibrateButton.setOnClickListener { enterCalibration() }
         binding.clearButton.setOnClickListener {
@@ -33,12 +40,13 @@ class MainActivity : AppCompatActivity() {
         binding.calDoneButton.setOnClickListener { exitCalibration(save = true) }
         binding.calResetButton.setOnClickListener {
             prefs.pxPerMm = 0f
-            binding.ruler.pxPerMm = systemPxPerMm
-            binding.calSeek.progress = progressFor(systemPxPerMm)
-            updateCalReadout(systemPxPerMm)
+            binding.ruler.pxPerMm = autoPxPerMm
+            binding.calSeek.progress = progressFor(autoPxPerMm)
+            updateCalReadout(autoPxPerMm)
         }
         binding.calSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(sb: SeekBar, progress: Int, fromUser: Boolean) {
+                if (!fromUser) return
                 val v = pxPerMmFor(progress)
                 binding.ruler.pxPerMm = v
                 updateCalReadout(v)
@@ -49,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun effectivePxPerMm(): Float =
-        if (prefs.isCalibrated) prefs.pxPerMm else systemPxPerMm
+        if (prefs.isCalibrated) prefs.pxPerMm else autoPxPerMm
 
     /** ydpi är ofta felrapporterad — bra nog som startgissning, kalibrering rättar. */
     private fun systemEstimate(): Float {
@@ -85,7 +93,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateCalReadout(pxPerMm: Float) {
         val dpi = pxPerMm * 25.4f
-        binding.calReadout.text = getString(R.string.calib_readout, pxPerMm, dpi)
+        binding.calReadout.text =
+            getString(R.string.calib_readout, pxPerMm, dpi) + "\n" + DeviceCalibration.identity()
     }
 
     private fun pxPerMmFor(progress: Int): Float =
