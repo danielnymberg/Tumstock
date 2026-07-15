@@ -11,8 +11,8 @@ android {
         applicationId = "se.nymberg.tumstock"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
     }
 
     buildFeatures {
@@ -28,10 +28,25 @@ android {
         jvmTarget = "17"
     }
 
+    signingConfigs {
+        // Fast nyckel så att varje bygge signeras lika → uppgraderingar går att
+        // installera över varandra. (CI genererar annars en ny debug-nyckel per
+        // körning, vilket ger signaturmismatch vid installation.)
+        create("stable") {
+            storeFile = rootProject.file("danyapps-release.keystore")
+            storePassword = "danyapps"
+            keyAlias = "danyapps"
+            keyPassword = "danyapps"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("stable")
+        }
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("stable")
         }
     }
 }
