@@ -63,6 +63,27 @@ class PhotoController(
         binding.photoUndoButton.setOnClickListener {
             binding.photoView.undoLast()
         }
+
+        binding.savePhotoButton.setOnClickListener { exportPhoto(share = false) }
+        binding.sharePhotoButton.setOnClickListener { exportPhoto(share = true) }
+    }
+
+    /** Ritar mätvärdena på bilden och sparar/delar den som mätfoto. */
+    private fun exportPhoto(share: Boolean) {
+        val src = binding.photoView.currentBitmap() ?: return
+        val lines = binding.photoView.lines
+        if (lines.isEmpty()) return
+        val rendered = PhotoExporter.render(src, lines, binding.photoView.lineValues)
+        val uri = PhotoExporter.saveToPictures(activity, rendered)
+        if (uri == null) {
+            Toast.makeText(activity, R.string.photo_save_error, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (share) {
+            PhotoExporter.share(activity, uri)
+        } else {
+            Toast.makeText(activity, R.string.photo_saved, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onPointsChanged(corners: Int, lines: Int, pending: Boolean) {
@@ -86,6 +107,9 @@ class PhotoController(
                 updateLineValues()
             }
         }
+        val hasLines = binding.photoView.lines.isNotEmpty()
+        binding.savePhotoButton.isEnabled = hasLines
+        binding.sharePhotoButton.isEnabled = hasLines
     }
 
     /** Räknar om alla mätlinjers värden och uppdaterar etiketter + resultatrad. */

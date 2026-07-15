@@ -36,6 +36,10 @@
     <string name="undo_point">Ångra punkt</string>
     <string name="photo_distance">%1$.1f mm  ·  %2$.2f cm</string>
     <string name="photo_load_error">Kunde inte läsa bilden</string>
+    <string name="save_photo">Spara bild</string>
+    <string name="share_photo">Dela</string>
+    <string name="photo_saved">Sparad i Bilder/Mätverktyg</string>
+    <string name="photo_save_error">Kunde inte spara bilden</string>
 
     <!-- Vattenpass -->
     <string name="mode_flat_hint">Platt läge — telefonen ligger på ytan</string>
