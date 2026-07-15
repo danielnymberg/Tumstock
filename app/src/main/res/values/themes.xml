@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- DaNy Apps-tema: varmt papper + bläck, alltid ljust (som danyapps.se). -->
-    <style name="Theme.Tumstock" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Theme.Matverktyg" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:colorBackground">@color/paper</item>
         <item name="colorSurface">@color/paper</item>
         <item name="colorSurfaceContainer">@color/paper_2</item>
