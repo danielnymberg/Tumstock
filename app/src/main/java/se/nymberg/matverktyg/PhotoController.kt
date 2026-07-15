@@ -119,8 +119,23 @@ class PhotoController(
             return
         }
         binding.photoView.setImage(bm)
-        binding.photoHint.text = activity.getString(R.string.photo_mark_corners, 0)
+        binding.photoHint.setText(R.string.photo_auto_searching)
         binding.photoResult.text = ""
+
+        // Auto-detektera kortet i bakgrunden; manuellt flöde är alltid fallback.
+        Thread {
+            val corners = OpenCvCardDetector.detectCard(bm)
+            activity.runOnUiThread {
+                // Skydda mot att en ny bild laddats under tiden.
+                if (binding.photoView.currentBitmap() !== bm) return@runOnUiThread
+                if (corners != null && binding.photoView.corners.isEmpty()) {
+                    binding.photoView.setDetectedCorners(corners)
+                    binding.photoHint.setText(R.string.photo_auto_found)
+                } else if (binding.photoView.corners.isEmpty()) {
+                    binding.photoHint.setText(R.string.photo_auto_failed)
+                }
+            }
+        }.start()
     }
 
     /** Läser bilden nedskalad (minne) och EXIF-roterad (kamerabilder). */
