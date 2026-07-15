@@ -65,36 +65,52 @@ class PhotoController(
         }
     }
 
-    override fun onPointsChanged(corners: Int, measures: Int) {
+    override fun onPointsChanged(corners: Int, lines: Int, pending: Boolean) {
         when {
             !binding.photoView.hasImage() -> {
                 binding.photoHint.setText(R.string.photo_empty_hint)
                 binding.photoResult.text = ""
+                binding.photoView.lineValues = emptyList()
             }
             corners < 4 -> {
                 binding.photoHint.text =
                     activity.getString(R.string.photo_mark_corners, corners)
                 binding.photoResult.text = ""
+                binding.photoView.lineValues = emptyList()
                 homography = null
             }
             else -> {
                 // Räkna om homografin varje gång (hörn kan ha finjusterats).
                 homography = Homography.fromCardCorners(binding.photoView.corners)
                 binding.photoHint.setText(R.string.photo_mark_points)
-                if (measures == 2 && homography != null) {
-                    val mm = Homography.distanceMm(
-                        homography!!,
-                        binding.photoView.measures[0],
-                        binding.photoView.measures[1]
-                    )
-                    binding.photoResult.text =
-                        activity.getString(R.string.photo_distance, mm, mm / 10.0)
-                } else {
-                    binding.photoResult.text = ""
-                }
+                updateLineValues()
             }
         }
     }
+
+    /** Räknar om alla mätlinjers värden och uppdaterar etiketter + resultatrad. */
+    private fun updateLineValues() {
+        val h = homography
+        val lineList = binding.photoView.lines
+        if (h == null || lineList.isEmpty()) {
+            binding.photoView.lineValues = emptyList()
+            binding.photoResult.text = ""
+            return
+        }
+        val values = lineList.map { line ->
+            val mm = Homography.distanceMm(h, line.a, line.b)
+            formatMm(mm)
+        }
+        binding.photoView.lineValues = values
+        // Resultatraden visar senaste måttet stort.
+        val lastIdx = values.size - 1
+        val letter = ('A' + (lastIdx % 26)).toString()
+        binding.photoResult.text = "$letter: ${values[lastIdx]}"
+    }
+
+    private fun formatMm(mm: Double): String =
+        if (mm >= 100) String.format("%.0f mm", mm)
+        else String.format("%.1f mm", mm)
 
     private fun loadImage(uri: Uri) {
         val bm = decodeScaled(uri, 2048)

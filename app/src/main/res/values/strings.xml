@@ -27,7 +27,7 @@
     <!-- Foto -->
     <string name="photo_empty_hint">Lägg ett bankkort bredvid det du vill mäta (samma plan), fota rakt uppifrån</string>
     <string name="photo_mark_corners">Markera kortets fyra hörn (%1$d/4) — dra för att finjustera</string>
-    <string name="photo_mark_points">Tryck på två punkter att mäta — dra för att finjustera</string>
+    <string name="photo_mark_points">Tryck två punkter per mått (upp till 8 mått) — dra med luppen för att finjustera</string>
     <string name="take_photo">Ta foto</string>
     <string name="pick_photo">Välj bild</string>
     <string name="undo_point">Ångra punkt</string>

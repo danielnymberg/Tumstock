@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.PointF
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -14,8 +15,12 @@ import kotlin.math.hypot
 import kotlin.math.min
 
 /**
- * Visar ett foto (fit-center) och låter användaren tappa/dra markörpunkter:
- * först fyra korthörn (terrakotta), sedan två mätpunkter (bläck).
+ * Visar ett foto (fit-center) och låter användaren markera:
+ *   1. bankkortets fyra hörn (terrakotta, streckad fyrhörning)
+ *   2. upp till [MAX_LINES] mätlinjer (bläck) med etiketter A, B, C …
+ *
+ * Punkter dras med en förstoringslupp ([Loupe]) och lyfts ~48 dp ovanför
+ * fingret under drag så att markören aldrig döljs av handen.
  * Alla punkter lagras i BILD-koordinater; vyn sköter transformationen.
  */
 class PhotoMarkView @JvmOverloads constructor(
@@ -24,25 +29,44 @@ class PhotoMarkView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : View(context, attrs, defStyle) {
 
+    data class MeasureLine(val a: PointF, val b: PointF)
+
     interface Listener {
-        fun onPointsChanged(corners: Int, measures: Int)
+        fun onPointsChanged(corners: Int, lines: Int, pending: Boolean)
     }
 
     var listener: Listener? = null
 
+    /** Formaterade värden per mätlinje (sätts av controllern), t.ex. "312 mm". */
+    var lineValues: List<String> = emptyList()
+        set(value) {
+            field = value
+            invalidate()
+        }
+
     private var bitmap: Bitmap? = null
     private val matrix = Matrix()
     private val inverse = Matrix()
+    private val loupe = Loupe(resources.displayMetrics.density)
 
     val corners = ArrayList<PointF>(4)
-    val measures = ArrayList<PointF>(2)
+    val lines = ArrayList<MeasureLine>()
+    var pendingPoint: PointF? = null
+        private set
+
+    // Drag-tillstånd
     private var dragging: PointF? = null
+    private var grabOffsetX = 0f
+    private var grabOffsetY = 0f
+    private var dragDistance = 0f
+    private var lastTouchX = 0f
+    private var lastTouchY = 0f
 
     private val cornerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#B04A3A")
         style = Paint.Style.FILL
     }
-    private val cornerRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val handleRing = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#F2EFE8")
         style = Paint.Style.STROKE
         strokeWidth = dp(2f)
@@ -62,12 +86,29 @@ class PhotoMarkView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         strokeWidth = dp(2f)
     }
+    private val pillBg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#F2EFE8")
+        style = Paint.Style.FILL
+    }
+    private val pillStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#1B1F1E")
+        style = Paint.Style.STROKE
+        strokeWidth = dp(1f)
+    }
+    private val pillText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#1B1F1E")
+        textSize = dp(13f)
+        textAlign = Paint.Align.CENTER
+    }
 
     fun setImage(bm: Bitmap?) {
         bitmap = bm
         corners.clear()
-        measures.clear()
+        lines.clear()
+        lineValues = emptyList()
+        pendingPoint = null
         dragging = null
+        loupe.active = false
         requestLayout()
         updateMatrix()
         invalidate()
@@ -76,17 +117,23 @@ class PhotoMarkView @JvmOverloads constructor(
 
     fun hasImage(): Boolean = bitmap != null
 
-    fun undoLast() {
-        when {
-            measures.isNotEmpty() -> measures.removeAt(measures.size - 1)
-            corners.isNotEmpty() -> corners.removeAt(corners.size - 1)
-        }
+    /** Kopia av bilden som exporten ritar på. */
+    fun currentBitmap(): Bitmap? = bitmap
+
+    /** Sätt auto-detekterade hörn (från OpenCV). */
+    fun setDetectedCorners(pts: List<PointF>) {
+        corners.clear()
+        corners.addAll(pts.take(4).map { PointF(it.x, it.y) })
         invalidate()
         notifyChange()
     }
 
-    fun clearMeasures() {
-        measures.clear()
+    fun undoLast() {
+        when {
+            pendingPoint != null -> pendingPoint = null
+            lines.isNotEmpty() -> lines.removeAt(lines.size - 1)
+            corners.isNotEmpty() -> corners.removeAt(corners.size - 1)
+        }
         invalidate()
         notifyChange()
     }
@@ -127,67 +174,121 @@ class PhotoMarkView @JvmOverloads constructor(
         for (p in corners) {
             val v = toView(p)
             canvas.drawCircle(v.x, v.y, dp(9f), cornerPaint)
-            canvas.drawCircle(v.x, v.y, dp(9f), cornerRing)
+            canvas.drawCircle(v.x, v.y, dp(9f), handleRing)
         }
 
-        // Mätpunkterna
-        if (measures.size == 2) {
-            val a = toView(measures[0])
-            val b = toView(measures[1])
+        // Mätlinjer med etikett-pill vid mittpunkten
+        for (i in lines.indices) {
+            val a = toView(lines[i].a)
+            val b = toView(lines[i].b)
             canvas.drawLine(a.x, a.y, b.x, b.y, linePaint)
+            canvas.drawCircle(a.x, a.y, dp(7f), measurePaint)
+            canvas.drawCircle(a.x, a.y, dp(7f), handleRing)
+            canvas.drawCircle(b.x, b.y, dp(7f), measurePaint)
+            canvas.drawCircle(b.x, b.y, dp(7f), handleRing)
+            drawPill(canvas, (a.x + b.x) / 2f, (a.y + b.y) / 2f, labelFor(i))
         }
-        for (p in measures) {
-            val v = toView(p)
-            canvas.drawCircle(v.x, v.y, dp(8f), measurePaint)
-            canvas.drawCircle(v.x, v.y, dp(8f), cornerRing)
+
+        // Pågående mätpunkt (första av två)
+        pendingPoint?.let {
+            val v = toView(it)
+            canvas.drawCircle(v.x, v.y, dp(7f), measurePaint)
+            canvas.drawCircle(v.x, v.y, dp(7f), handleRing)
+        }
+
+        // Lupp överst
+        dragging?.let {
+            loupe.draw(canvas, bm, matrix, toView(it), width, height)
         }
     }
 
+    private fun labelFor(i: Int): String {
+        val letter = ('A' + (i % 26)).toString()
+        val value = lineValues.getOrNull(i)
+        return if (value.isNullOrEmpty()) letter else "$letter  $value"
+    }
+
+    private fun drawPill(canvas: Canvas, cx: Float, cy: Float, text: String) {
+        val padH = dp(8f)
+        val padV = dp(5f)
+        val w = pillText.measureText(text)
+        val rect = RectF(cx - w / 2 - padH, cy - dp(9f) - padV, cx + w / 2 + padH, cy + dp(9f) + padV)
+        val r = dp(9f)
+        canvas.drawRoundRect(rect, r, r, pillBg)
+        canvas.drawRoundRect(rect, r, r, pillStroke)
+        canvas.drawText(text, cx, cy + dp(5f), pillText)
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (bitmap == null) return false
-        val img = toImage(event.x, event.y) ?: return false
+        val bm = bitmap ?: return false
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                dragging = nearestPoint(img)
-                if (dragging == null) {
+                lastTouchX = event.x
+                lastTouchY = event.y
+                dragDistance = 0f
+                val grabbed = nearestPoint(event.x, event.y)
+                if (grabbed != null) {
+                    dragging = grabbed
+                    val v = toView(grabbed)
+                    grabOffsetX = v.x - event.x
+                    grabOffsetY = v.y - event.y
+                } else {
+                    val img = toImage(event.x, event.y) ?: return true
                     val p = PointF(img.x, img.y)
                     when {
                         corners.size < 4 -> corners.add(p)
-                        measures.size < 2 -> measures.add(p)
+                        pendingPoint == null && lines.size < MAX_LINES -> pendingPoint = p
+                        pendingPoint != null -> {
+                            lines.add(MeasureLine(pendingPoint!!, p))
+                            pendingPoint = null
+                        }
                         else -> return true
                     }
                     dragging = p
+                    grabOffsetX = 0f
+                    grabOffsetY = 0f
                     notifyChange()
                 }
                 invalidate()
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                dragging?.let {
-                    it.x = img.x
-                    it.y = img.y
-                    invalidate()
-                    notifyChange()
-                }
+                val d = dragging ?: return true
+                dragDistance += hypot(event.x - lastTouchX, event.y - lastTouchY)
+                lastTouchX = event.x
+                lastTouchY = event.y
+                // Lyft punkten mjukt till ~48 dp ovanför fingret så den syns.
+                val lift = (dragDistance / dp(32f)).coerceIn(0f, 1f) * dp(48f)
+                val img = toImage(event.x + grabOffsetX, event.y + grabOffsetY - lift)
+                    ?: return true
+                d.x = img.x
+                d.y = img.y
+                loupe.active = true
+                invalidate()
+                notifyChange()
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 dragging = null
+                loupe.active = false
+                invalidate()
                 return true
             }
         }
         return super.onTouchEvent(event)
     }
 
-    /** Närmsta befintliga punkt inom greppavstånd, annars null. */
-    private fun nearestPoint(img: PointF): PointF? {
-        val grabPx = dp(22f)
+    /** Närmsta befintliga punkt inom greppavstånd (vy-koordinater), annars null. */
+    private fun nearestPoint(x: Float, y: Float): PointF? {
+        val grabPx = dp(24f)
         var best: PointF? = null
         var bestDist = Float.MAX_VALUE
-        for (p in corners + measures) {
+        val all = ArrayList<PointF>(corners)
+        pendingPoint?.let { all.add(it) }
+        for (l in lines) { all.add(l.a); all.add(l.b) }
+        for (p in all) {
             val v = toView(p)
-            val vTouch = toView(img)
-            val d = hypot(v.x - vTouch.x, v.y - vTouch.y)
+            val d = hypot(v.x - x, v.y - y)
             if (d < grabPx && d < bestDist) { best = p; bestDist = d }
         }
         return best
@@ -210,8 +311,12 @@ class PhotoMarkView @JvmOverloads constructor(
     }
 
     private fun notifyChange() {
-        listener?.onPointsChanged(corners.size, measures.size)
+        listener?.onPointsChanged(corners.size, lines.size, pendingPoint != null)
     }
 
     private fun dp(v: Float): Float = v * resources.displayMetrics.density
+
+    companion object {
+        const val MAX_LINES = 8
+    }
 }
