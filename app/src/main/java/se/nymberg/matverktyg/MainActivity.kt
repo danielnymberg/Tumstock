@@ -23,7 +23,9 @@ class MainActivity : AppCompatActivity() {
         // så att knappar aldrig hamnar under navigeringsfältet.
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            v.setPadding(bars.left, bars.top, bars.right, 0)
+            // Terrakotta-balken bär navigeringsytan i sin egen färg (kant-till-kant).
+            binding.bottomNav.setPadding(0, 0, 0, bars.bottom)
             WindowInsetsCompat.CONSUMED
         }
 

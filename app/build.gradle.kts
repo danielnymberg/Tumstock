@@ -12,8 +12,8 @@ android {
         // minSdk 29: MediaStore-export utan behörighet (IS_PENDING-flödet).
         minSdk = 29
         targetSdk = 35
-        versionCode = 4
-        versionName = "2.1.2"
+        versionCode = 5
+        versionName = "2.2.0"
 
         ndk {
             // Endast arm64: håller APK:n ~30 MB mindre än alla fyra ABI:er.

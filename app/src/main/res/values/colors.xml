@@ -11,6 +11,10 @@
     <color name="rule_soft">#171B1F1E</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Funktionsfärg för Tumstock (mätmarkör + kalibreringsram) -->
+    <!-- Accentfärg för Mätverktyg (terrakotta) — dominerande kulör, samma som ikonens balk -->
     <color name="accent">#FFB04A3A</color>
+    <!-- Ljus terrakotta-ton för fyllda containrar (chips, tonala knappar) -->
+    <color name="accent_soft">#FFEDD5CC</color>
+    <!-- Inaktiva ikoner/etiketter på terrakotta-balken -->
+    <color name="on_accent_mute">#FFDEBDB4</color>
 </resources>

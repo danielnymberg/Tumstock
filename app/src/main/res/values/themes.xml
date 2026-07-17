@@ -8,14 +8,24 @@
         <item name="colorSurfaceContainerHigh">@color/paper_2</item>
         <item name="colorOnSurface">@color/ink</item>
         <item name="colorOnSurfaceVariant">@color/ink_3</item>
-        <item name="colorPrimary">@color/ink</item>
+        <!-- Accenten (terrakotta, samma som ikonbalken) är appens dominerande kulör:
+             primärknappar, chips, aktiva lägen och bottennavigeringen. -->
+        <item name="colorPrimary">@color/accent</item>
         <item name="colorOnPrimary">@color/paper</item>
-        <item name="colorSecondaryContainer">@color/paper_2</item>
+        <item name="colorPrimaryContainer">@color/accent_soft</item>
+        <item name="colorOnPrimaryContainer">@color/ink</item>
+        <item name="colorSecondaryContainer">@color/accent_soft</item>
         <item name="colorOnSecondaryContainer">@color/ink</item>
         <item name="colorOutline">@color/ink_mute</item>
         <item name="android:statusBarColor">@color/paper</item>
-        <item name="android:navigationBarColor">@color/paper</item>
+        <item name="android:navigationBarColor">@color/accent</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <!-- Aktiv-indikator på terrakotta-balken: svag papperston -->
+    <style name="DaNy.NavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">#33F2EFE8</item>
     </style>
 
     <style name="DaNy.Meta" parent="">
