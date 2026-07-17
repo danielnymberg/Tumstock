@@ -3,21 +3,34 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Vinkelhake (bläck, tunt streck) -->
+
+    <!-- Symbol: stående linjal, tunna graderingar (bläck) -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#1B1F1E"
-        android:strokeWidth="4"
+        android:strokeWidth="3"
         android:strokeLineJoin="round"
-        android:pathData="M34,26 h12 v36 h36 v12 a2,2 0 0 1 -2,2 h-44 a2,2 0 0 1 -2,-2 v-46 a2,2 0 0 1 2,-2 z" />
-    <!-- Graderingar (funktionsfärg) -->
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M34,36 H41" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M34,46 H44" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M34,56 H41" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M62,74 V67" />
-    <path android:fillColor="#00000000" android:strokeColor="#B04A3A" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M72,74 V64" />
-    <!-- Libellbubbla i hörnet -->
+        android:pathData="M45,16 h18 a3,3 0 0 1 3,3 v34 a3,3 0 0 1 -3,3 h-18 a3,3 0 0 1 -3,-3 v-34 a3,3 0 0 1 3,-3 z" />
+    <path android:fillColor="#00000000" android:strokeColor="#1B1F1E" android:strokeWidth="1.8" android:strokeLineCap="round" android:pathData="M42,22 h9" />
+    <path android:fillColor="#00000000" android:strokeColor="#1B1F1E" android:strokeWidth="1.8" android:strokeLineCap="round" android:pathData="M42,28 h5.5" />
+    <path android:fillColor="#00000000" android:strokeColor="#1B1F1E" android:strokeWidth="1.8" android:strokeLineCap="round" android:pathData="M42,34 h9" />
+    <path android:fillColor="#00000000" android:strokeColor="#1B1F1E" android:strokeWidth="1.8" android:strokeLineCap="round" android:pathData="M42,40 h5.5" />
+    <path android:fillColor="#00000000" android:strokeColor="#1B1F1E" android:strokeWidth="1.8" android:strokeLineCap="round" android:pathData="M42,46 h9" />
+    <path android:fillColor="#00000000" android:strokeColor="#1B1F1E" android:strokeWidth="1.8" android:strokeLineCap="round" android:pathData="M42,52 h5.5" />
+    <!-- Liten libell med terrakotta-bubbla -->
     <path
-        android:fillColor="#B04A3A"
-        android:pathData="M62,44 m-6,0 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 z" />
+        android:fillColor="#00000000"
+        android:strokeColor="#1B1F1E"
+        android:strokeWidth="1.8"
+        android:pathData="M75.5,45 m-5.5,0 a5.5,5.5 0 1 0 11,0 a5.5,5.5 0 1 0 -11,0" />
+    <path android:fillColor="#B04A3A" android:pathData="M75.5,45 m-2,0 a2,2 0 1 0 4,0 a2,2 0 1 0 -4,0 z" />
+
+    <!-- DaNy-balken (terrakotta) -->
+    <path android:fillColor="#B04A3A" android:pathData="M0,62 h108 v46 h-108 z" />
+
+    <!-- "DaNy" i pappersfärg, streck-typografi -->
+    <path android:fillColor="#00000000" android:strokeColor="#F2EFE8" android:strokeWidth="3" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M33,68 V80.5 M33,68 h2.6 a6.25,6.25 0 0 1 0,12.5 h-2.6" />
+    <path android:fillColor="#00000000" android:strokeColor="#F2EFE8" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M42.2,76.2 a3.8,3.8 0 1 0 7.6,0 a3.8,3.8 0 1 0 -7.6,0 M49.8,72.2 V80.5" />
+    <path android:fillColor="#00000000" android:strokeColor="#F2EFE8" android:strokeWidth="3" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M53.5,80.5 V68 L62,80.5 V68" />
+    <path android:fillColor="#00000000" android:strokeColor="#F2EFE8" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M66.5,72.2 L69.8,79 M73.5,72.2 L68.5,83.5" />
 </vector>
